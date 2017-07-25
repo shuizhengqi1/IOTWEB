@@ -2,18 +2,23 @@ import sqlite3
 
 class db:
     con = sqlite3.connect('db/Module.db')
-    checktablesql = 'CREATE TABLE IF NOT EXISTS MODULELIST(id INTEGER PRIMARY KEY AUTOINCREMENT,modulename VARCHAR(20) not NULL,moduleaction VARCHAR(20) not NULL,TIME int not NULL);'
-    con.execute(checktablesql)
-    def moduleadd(self,modulename,moduleaction,time):
+    cur = con.cursor()
+    checktablesql = 'CREATE TABLE IF NOT EXISTS MODULELIST(id INTEGER PRIMARY KEY AUTOINCREMENT,modulename VARCHAR(20) not NULL UNIQUE,moduleaction VARCHAR(20) not NULL,TIME int not NULL);'
+    cur.execute(checktablesql)
+    cur.close()
+    def modulemod(self,modulename,moduleaction,time):
         checkmodulesql = "select id from MODULELIST WHERE modulename = '"+modulename+"' "
-        result = self.con.execute(checkmodulesql)
-        print result.fetchall()
-        print len(result.fetchall())
-        print result.rowcount
-        if result.rowcount == 0:
-            addmodulesql = "INSERT INTO MODULELIST VALUES (NULL,'"+modulename+"','"+moduleaction+"','"+time+"')"
-            print addmodulesql
-            self.con.execute(addmodulesql)
-            self.con.commit()
-            self.con.close()
-db().moduleadd('test12','rsun','1')
+        cursor = self.con.cursor()
+        cursor.execute(checkmodulesql)
+        count = len(cursor.fetchall())
+        print count
+        if count == 0:
+            modulesql = "INSERT INTO MODULELIST VALUES (NULL,'"+modulename+"','"+moduleaction+"','"+time+"')"
+        else:
+            modulesql = "UPDATE MODULELIST SET moduleaction = '"+moduleaction+"', TIME = '"+time+"' where modulename = '"+modulename+"'"
+        print modulesql
+        cursor.execute(modulesql)
+        self.con.commit()
+        cursor.close()
+        self.con.close()
+db().modulemod('tessst12','rsu2n','12')
